@@ -13,5 +13,5 @@ pip install oshinko_temaki
 to create a cluster where the spark-operator is running
 
 ```
-osh | oc create -f -
+osh | oc apply -f -
 ```
