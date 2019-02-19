@@ -25,15 +25,24 @@ def main():
                         help="number of worker nodes",
                         type=int,
                         default=1)
+    parser.add_argument("-i", "--image",
+                        dest="image",
+                        help="Spark cluster image to use")
     parser.add_argument("--crd",
                         dest="crd",
                         help="set if the output should be a CRD",
                         action="store_true")
     args = parser.parse_args()
     if args.crd is True:
-        cluster = templates.CRDTemplate(args.name, args.masters, args.workers)
+        cluster = templates.CRDTemplate(args.name,
+                                        args.masters,
+                                        args.workers,
+                                        args.image)
     else:
-        cluster = templates.CMTemplate(args.name, args.masters, args.workers)
+        cluster = templates.CMTemplate(args.name,
+                                       args.masters,
+                                       args.workers,
+                                       args.image)
     print(cluster.dumps())
 
 

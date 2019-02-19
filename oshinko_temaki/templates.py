@@ -1,5 +1,7 @@
 import json
 
+import yaml
+
 
 class BaseTemplate():
     def dumps(self):
@@ -7,7 +9,19 @@ class BaseTemplate():
 
 
 class CMTemplate(BaseTemplate):
-    def __init__(self, name, masters, workers):
+    def __init__(self, name, masters, workers, image):
+        data = {
+            "master": {
+                "instances": masters
+            },
+            "worker": {
+                "instances": workers
+            }
+        }
+
+        if image is not None:
+            data["customImage"] = image
+
         self._data = {
             "apiVersion": "v1",
             "kind": "ConfigMap",
@@ -18,18 +32,13 @@ class CMTemplate(BaseTemplate):
                 }
             },
             "data": {
-                "config": """
-                    master:
-                        instances: "{masters}"
-                    worker:
-                        instances: "{workers}"
-                """.format(masters=masters, workers=workers)
+                "config": yaml.dump(data)
             }
         }
 
-    
+
 class CRDTemplate(BaseTemplate):
-    def __init__(self, name, masters, workers):
+    def __init__(self, name, masters, workers, image):
         self._data = {
             "apiVersion": "radanalytics.io/v1",
             "kind": "SparkCluster",
@@ -45,3 +54,6 @@ class CRDTemplate(BaseTemplate):
                 }
             }
         }
+
+        if image is not None:
+            self._data["spec"]["customImage"] = image
