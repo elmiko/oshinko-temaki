@@ -4,7 +4,14 @@
 
 hand rolled spark clusters for openshift
 
-to get started
+## overview
+
+This is a simple console utility to make creating Spark clusters with the
+[spark-operator](https://github.com/radanalyticsio/spark-operator) simpler.
+When invoked it will print a cluster schema to standard output using the
+requested options.
+
+## get started
 
 ```
 pip install oshinko_temaki
@@ -13,5 +20,11 @@ pip install oshinko_temaki
 to create a cluster where the spark-operator is running
 
 ```
-osh | oc apply -f -
+osht | oc apply -f -
+```
+
+for more details
+
+```
+osht -h
 ```
