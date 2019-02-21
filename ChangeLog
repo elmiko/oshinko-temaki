@@ -1,0 +1,24 @@
+CHANGES
+=======
+
+0.2.0
+-----
+
+* update version to 0.2.0
+* update PyYAML version
+* rename osh to osht
+* update setup.cfg
+* adding an image argument
+* update readme with apply instead of create
+* add build badge to readme
+* add basic pep8 test with travis integration
+
+0.1.0
+-----
+
+* add version to setup.cfg
+* update readme with simple instructions
+* add initial working version
+* add ignore file
+* add license
+* add readme
