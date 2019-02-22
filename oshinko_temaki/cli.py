@@ -32,17 +32,23 @@ def main():
                         dest="crd",
                         help="set if the output should be a CRD",
                         action="store_true")
+    parser.add_argument("-t", "--metrics",
+                        dest="metrics",
+                        help="enable metrics deployment",
+                        action="store_true")
     args = parser.parse_args()
     if args.crd is True:
         cluster = templates.CRDTemplate(args.name,
                                         args.masters,
                                         args.workers,
-                                        args.image)
+                                        args.image,
+                                        args.metrics)
     else:
         cluster = templates.CMTemplate(args.name,
                                        args.masters,
                                        args.workers,
-                                       args.image)
+                                       args.image,
+                                       args.metrics)
     print(cluster.dumps())
 
 
