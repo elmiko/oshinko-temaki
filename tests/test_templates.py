@@ -41,6 +41,28 @@ class TestCMTemplate(unittest.TestCase):
                                                Loader=yaml.FullLoader)
         self.assertDictEqual(observed, expected)
 
+    def test_customImage(self):
+        """test adding a custom image to the CRD"""
+        imageref = "some/custom:image"
+        expected = self.base_expected()
+        expected["metadata"]["name"] = "test-cluster"
+        expected["data"]["config"] = {
+            "master": { "instances": 1 },
+            "worker": { "instances": 1 },
+            "customImage": imageref
+        }
+
+        raw = templates.CMTemplate(
+            name="test-cluster",
+            masters=1,
+            workers=1,
+            image=imageref,
+            metrics=False).dumps()
+        observed = json.loads(raw)
+        observed["data"]["config"] = yaml.load(observed["data"]["config"],
+                                               Loader=yaml.FullLoader)
+        self.assertDictEqual(observed, expected)
+
 
 class TestCRDTemplate(unittest.TestCase):
     @staticmethod
@@ -48,21 +70,22 @@ class TestCRDTemplate(unittest.TestCase):
         return {
             "apiVersion": "radanalytics.io/v1",
             "kind": "SparkCluster",
-            "metadata": {},
+            "metadata": {
+                "name": "test-cluster"
+            },
             "spec": {
-                "master": {},
-                "worker": {}
+                "master": {
+                    "instances": 1
+                },
+                "worker": {
+                    "instances": 1
+                }
             }
         }
 
     def test_minimum(self):
         """test the small possible CRD definition of a cluster"""
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
-        expected["spec"] = {
-            "master": { "instances": 1 },
-            "worker": { "instances": 1 }
-        }
 
         raw = templates.CRDTemplate(
             name="test-cluster",
@@ -73,3 +96,17 @@ class TestCRDTemplate(unittest.TestCase):
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
+    def test_customImage(self):
+        """test adding a custom image to the CRD"""
+        imageref = "some/custom:image"
+        expected = self.base_expected()
+        expected["spec"]["customImage"] = imageref
+
+        raw = templates.CRDTemplate(
+            name="test-cluster",
+            masters=1,
+            workers=1,
+            image=imageref,
+            metrics=False).dumps()
+        observed = json.loads(raw)
+        self.assertDictEqual(observed, expected)
