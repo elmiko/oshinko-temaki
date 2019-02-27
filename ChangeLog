@@ -1,6 +1,20 @@
 CHANGES
 =======
 
+0.3.0
+-----
+
+* minor grammar update in README
+* add metrics test
+* add tests for custom images
+* add minimal CRDTemplate test
+* add unittest framework and initial template test
+* rename CONTRIBUTING to CONTRIBUTING.md
+* add contributing doc
+* add metrics flag to osht
+* Remove version from setup.cfg
+* add AUTHORS and ChangeLog files
+
 0.2.0
 -----
 
