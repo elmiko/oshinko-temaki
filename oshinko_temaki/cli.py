@@ -36,19 +36,22 @@ def main():
                         dest="metrics",
                         help="enable metrics deployment",
                         action="store_true")
+    parser.add_argument("-u", "--ui",
+                        dest="webui",
+                        help="enable Spark master web ui route",
+                        action="store_true")
     args = parser.parse_args()
     if args.crd is True:
-        cluster = templates.CRDTemplate(args.name,
-                                        args.masters,
-                                        args.workers,
-                                        args.image,
-                                        args.metrics)
+        Template = templates.CRDTemplate
     else:
-        cluster = templates.CMTemplate(args.name,
-                                       args.masters,
-                                       args.workers,
-                                       args.image,
-                                       args.metrics)
+        Template = templates.CMTemplate
+    cluster = Template(args.name,
+                       args.masters,
+                       args.workers,
+                       args.image,
+                       args.metrics,
+                       args.webui)
+
     print(cluster.dumps())
 
 

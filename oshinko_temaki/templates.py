@@ -4,12 +4,13 @@ import yaml
 
 
 class BaseTemplate():
-    def __init__(self, name, masters, workers, image, metrics):
+    def __init__(self, name, masters, workers, image, metrics, webui):
         self.name = name
         self.masters = masters
         self.workers = workers
         self.image = image
         self.metrics = metrics
+        self.webui = webui
 
     def dumps(self):
         return json.dumps(self._data)
@@ -33,6 +34,9 @@ class CMTemplate(BaseTemplate):
 
         if self.metrics is True:
             data["metrics"] = True
+
+        if self.webui is True:
+            data["sparkWebUI"] = True
 
         self._data = {
             "apiVersion": "v1",
@@ -71,6 +75,9 @@ class CRDTemplate(BaseTemplate):
 
         if self.image is not None:
             self._data["spec"]["customImage"] = self.image
-        
+
         if self.metrics is True:
             self._data["spec"]["metrics"] = True
+
+        if self.webui is True:
+            self._data["spec"]["sparkWebUI"] = True

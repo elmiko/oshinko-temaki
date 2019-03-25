@@ -39,7 +39,8 @@ class TestCMTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=None,
-            metrics=False).dumps()
+            metrics=False,
+            webui=False).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -58,7 +59,8 @@ class TestCMTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=imageref,
-            metrics=False).dumps()
+            metrics=False,
+            webui=False).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -76,7 +78,27 @@ class TestCMTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=None,
-            metrics=True).dumps()
+            metrics=True,
+            webui=False).dumps()
+        observed = json.loads(raw)
+        observed["data"]["config"] = yaml.load(observed["data"]["config"],
+                                               Loader=yaml.FullLoader)
+        self.assertDictEqual(observed, expected)
+
+    def test_webui(self):
+        """test adding enabled web ui to the ConfigMap"""
+        expected = self.base_expected()
+        expected["metadata"]["name"] = "test-cluster"
+        expected["data"]["config"] = self.base_config()
+        expected["data"]["config"].update({"sparkWebUI": True})
+
+        raw = templates.CMTemplate(
+            name="test-cluster",
+            masters=1,
+            workers=1,
+            image=None,
+            metrics=False,
+            webui=True).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -111,7 +133,8 @@ class TestCRDTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=None,
-            metrics=False).dumps()
+            metrics=False,
+            webui=False).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
@@ -126,7 +149,8 @@ class TestCRDTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=imageref,
-            metrics=False).dumps()
+            metrics=False,
+            webui=False).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
@@ -140,6 +164,22 @@ class TestCRDTemplate(unittest.TestCase):
             masters=1,
             workers=1,
             image=None,
-            metrics=True).dumps()
+            metrics=True,
+            webui=False).dumps()
+        observed = json.loads(raw)
+        self.assertDictEqual(observed, expected)
+
+    def test_webui(self):
+        """test adding enabled web ui to the CRD"""
+        expected = self.base_expected()
+        expected["spec"]["sparkWebUI"] = True
+
+        raw = templates.CRDTemplate(
+            name="test-cluster",
+            masters=1,
+            workers=1,
+            image=None,
+            metrics=False,
+            webui=True).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
