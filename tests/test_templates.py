@@ -1,8 +1,10 @@
+import argparse
 import json
 import unittest
 
 import yaml
 
+from oshinko_temaki import configs
 from oshinko_temaki import templates
 
 
@@ -27,20 +29,34 @@ class TestCMTemplate(unittest.TestCase):
             "worker": { "instances": 1 }
         }
 
-
     def test_minimum(self):
-        """test the small possible ConfigMap definition of a cluster"""
+        """test the minimal ConfigMap definition of a cluster"""
+        expected = self.base_expected()
+        expected["data"]["config"] = self.base_config()
+
+        conf = configs.ClusterConfig(object())
+        raw = templates.CMTemplate(conf).dumps()
+        observed = json.loads(raw)
+        observed["data"]["config"] = yaml.load(observed["data"]["config"],
+                                               Loader=yaml.FullLoader)
+        self.assertEqual(observed["apiVersion"], expected["apiVersion"])
+        self.assertEqual(observed["kind"], expected["kind"])
+        self.assertEqual(observed["metadata"]["labels"],
+                         expected["metadata"]["labels"])
+        self.assertEqual(observed["data"]["config"]["master"]["instances"],
+                         expected["data"]["config"]["master"]["instances"])
+        self.assertEqual(observed["data"]["config"]["worker"]["instances"],
+                         expected["data"]["config"]["worker"]["instances"])
+        self.assertNotEqual(observed["metadata"]["name"], None)
+
+    def test_name(self):
+        """test adding a name to a ConfigMap definition of a cluster"""
         expected = self.base_expected()
         expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
 
-        raw = templates.CMTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=False,
-            webui=False).dumps()
+        conf = configs.ClusterConfig(argparse.Namespace(name="test-cluster"))
+        raw = templates.CMTemplate(conf).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -54,13 +70,10 @@ class TestCMTemplate(unittest.TestCase):
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"customImage": imageref})
 
-        raw = templates.CMTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=imageref,
-            metrics=False,
-            webui=False).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                  image=imageref)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CMTemplate(conf).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -73,13 +86,10 @@ class TestCMTemplate(unittest.TestCase):
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"metrics": True})
 
-        raw = templates.CMTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=True,
-            webui=False).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   metrics=True)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CMTemplate(conf).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -92,13 +102,10 @@ class TestCMTemplate(unittest.TestCase):
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"sparkWebUI": True})
 
-        raw = templates.CMTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=False,
-            webui=True).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   webui=True)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CMTemplate(conf).dumps()
         observed = json.loads(raw)
         observed["data"]["config"] = yaml.load(observed["data"]["config"],
                                                Loader=yaml.FullLoader)
@@ -128,13 +135,20 @@ class TestCRDTemplate(unittest.TestCase):
         """test the small possible CRD definition of a cluster"""
         expected = self.base_expected()
 
-        raw = templates.CRDTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=False,
-            webui=False).dumps()
+        conf = configs.ClusterConfig(object())
+        raw = templates.CRDTemplate(conf).dumps()
+        observed = json.loads(raw)
+        self.assertEqual(observed["apiVersion"], expected["apiVersion"])
+        self.assertEqual(observed["kind"], expected["kind"])
+        self.assertDictEqual(observed["spec"], expected["spec"])
+
+    def test_name(self):
+        """test adding a name to a CRD definition of a cluster"""
+        expected = self.base_expected()
+
+        parms = argparse.Namespace(name=expected["metadata"]["name"])
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
@@ -144,13 +158,10 @@ class TestCRDTemplate(unittest.TestCase):
         expected = self.base_expected()
         expected["spec"]["customImage"] = imageref
 
-        raw = templates.CRDTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=imageref,
-            metrics=False,
-            webui=False).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   image=imageref)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
@@ -159,13 +170,10 @@ class TestCRDTemplate(unittest.TestCase):
         expected = self.base_expected()
         expected["spec"]["metrics"] = True
 
-        raw = templates.CRDTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=True,
-            webui=False).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   metrics=True)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)
 
@@ -174,12 +182,9 @@ class TestCRDTemplate(unittest.TestCase):
         expected = self.base_expected()
         expected["spec"]["sparkWebUI"] = True
 
-        raw = templates.CRDTemplate(
-            name="test-cluster",
-            masters=1,
-            workers=1,
-            image=None,
-            metrics=False,
-            webui=True).dumps()
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   webui=True)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)
         self.assertDictEqual(observed, expected)

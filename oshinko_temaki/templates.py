@@ -4,13 +4,13 @@ import yaml
 
 
 class BaseTemplate():
-    def __init__(self, name, masters, workers, image, metrics, webui):
-        self.name = name
-        self.masters = masters
-        self.workers = workers
-        self.image = image
-        self.metrics = metrics
-        self.webui = webui
+    def __init__(self, config):
+        self.name = config.name
+        self.masters = config.masters
+        self.workers = config.workers
+        self.image = config.image
+        self.metrics = config.metrics
+        self.webui = config.webui
 
     def dumps(self):
         return json.dumps(self._data)

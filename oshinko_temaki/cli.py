@@ -1,11 +1,7 @@
 import argparse
-import uuid
 
+from oshinko_temaki import config
 from oshinko_temaki import templates
-
-def generate_name():
-    name = 'spark-{}'.format(uuid.uuid4().hex[-4:])
-    return name
 
 
 def main():
@@ -13,18 +9,15 @@ def main():
     parser = argparse.ArgumentParser(description="create spark cluster configs")
     parser.add_argument("-n", "--name",
                         dest="name",
-                        help="name of the spark cluster",
-                        default=generate_name())
+                        help="name of the spark cluster")
     parser.add_argument("-m", "--masters",
                         dest="masters",
                         help="number of master nodes",
-                        type=int,
-                        default=1)
+                        type=int)
     parser.add_argument("-w", "--workers",
                         dest="workers",
                         help="number of worker nodes",
-                        type=int,
-                        default=1)
+                        type=int)
     parser.add_argument("-i", "--image",
                         dest="image",
                         help="Spark cluster image to use")
@@ -41,16 +34,11 @@ def main():
                         help="enable Spark master web ui route",
                         action="store_true")
     args = parser.parse_args()
+    conf = config.ClusterConfig(args)
     if args.crd is True:
-        Template = templates.CRDTemplate
+        cluster = templates.CRDTemplate(conf)
     else:
-        Template = templates.CMTemplate
-    cluster = Template(args.name,
-                       args.masters,
-                       args.workers,
-                       args.image,
-                       args.metrics,
-                       args.webui)
+        cluster = templates.CMTemplate(conf)
 
     print(cluster.dumps())
 
