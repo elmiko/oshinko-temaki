@@ -1,6 +1,6 @@
 import argparse
 
-from oshinko_temaki import config
+from oshinko_temaki import configs
 from oshinko_temaki import templates
 
 
@@ -37,7 +37,7 @@ def main():
                         dest="configmap",
                         help="a configmap name to use for spark configuration")
     args = parser.parse_args()
-    conf = config.ClusterConfig(args)
+    conf = configs.ClusterConfig(args)
     if args.crd is True:
         cluster = templates.CRDTemplate(conf)
     else:
