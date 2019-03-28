@@ -36,6 +36,11 @@ def main():
     parser.add_argument("-c", "--configmap",
                         dest="configmap",
                         help="a configmap name to use for spark configuration")
+    parser.add_argument("-e", "--env",
+                        dest="envs",
+                        action="append",
+                        help="and environment variable to set in cluster, " \
+                             "example --env KEY=VALUE")
     args = parser.parse_args()
     conf = configs.ClusterConfig(args)
     if args.crd is True:

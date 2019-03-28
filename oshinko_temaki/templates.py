@@ -13,6 +13,15 @@ class BaseTemplate():
         self.webui = config.webui
         self.configmap = config.configmap
 
+        # setup env variables so they are easier to process
+        if config.envs is None:
+            self.envs = None
+        else:
+            self.envs = [] 
+            for env in config.envs:
+                key, value = env.split("=", 1)
+                self.envs.append({ "name": key, "value": value })
+
     def dumps(self):
         return json.dumps(self._data)
 
@@ -41,6 +50,9 @@ class CMTemplate(BaseTemplate):
 
         if self.configmap is not None:
             data["sparkConfigurationMap"] = self.configmap
+
+        if self.envs is not None:
+            data["env"] = self.envs
 
         self._data = {
             "apiVersion": "v1",
@@ -88,3 +100,6 @@ class CRDTemplate(BaseTemplate):
 
         if self.configmap is not None:
             self._data["spec"]["sparkConfigurationMap"] = self.configmap
+
+        if self.envs is not None:
+            self._data["spec"]["env"] = self.envs
