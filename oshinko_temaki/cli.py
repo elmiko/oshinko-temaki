@@ -33,6 +33,9 @@ def main():
                         dest="webui",
                         help="enable Spark master web ui route",
                         action="store_true")
+    parser.add_argument("-c", "--configmap",
+                        dest="configmap",
+                        help="a configmap name to use for spark configuration")
     args = parser.parse_args()
     conf = config.ClusterConfig(args)
     if args.crd is True:

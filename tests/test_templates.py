@@ -111,6 +111,22 @@ class TestCMTemplate(unittest.TestCase):
                                                Loader=yaml.FullLoader)
         self.assertDictEqual(observed, expected)
 
+    def test_configmap(self):
+        """test adding a configmap to the ConfigMap"""
+        expected = self.base_expected()
+        expected["metadata"]["name"] = "test-cluster"
+        expected["data"]["config"] = self.base_config()
+        expected["data"]["config"].update({"sparkConfigurationMap": "testMap"})
+
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   configmap="testMap")
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CMTemplate(conf).dumps()
+        observed = json.loads(raw)
+        observed["data"]["config"] = yaml.load(observed["data"]["config"],
+                                               Loader=yaml.FullLoader)
+        self.assertDictEqual(observed, expected)
+
 
 class TestCRDTemplate(unittest.TestCase):
     @staticmethod
@@ -184,6 +200,18 @@ class TestCRDTemplate(unittest.TestCase):
 
         parms = argparse.Namespace(name=expected["metadata"]["name"],
                                    webui=True)
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
+        observed = json.loads(raw)
+        self.assertDictEqual(observed, expected)
+
+    def test_configmap(self):
+        """test adding a configmap to the CRD"""
+        expected = self.base_expected()
+        expected["spec"]["sparkConfigurationMap"] = "testMap"
+
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   configmap="testMap")
         conf = configs.ClusterConfig(parms)
         raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)

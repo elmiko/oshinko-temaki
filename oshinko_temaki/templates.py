@@ -11,6 +11,7 @@ class BaseTemplate():
         self.image = config.image
         self.metrics = config.metrics
         self.webui = config.webui
+        self.configmap = config.configmap
 
     def dumps(self):
         return json.dumps(self._data)
@@ -37,6 +38,9 @@ class CMTemplate(BaseTemplate):
 
         if self.webui is True:
             data["sparkWebUI"] = True
+
+        if self.configmap is not None:
+            data["sparkConfigurationMap"] = self.configmap
 
         self._data = {
             "apiVersion": "v1",
@@ -81,3 +85,6 @@ class CRDTemplate(BaseTemplate):
 
         if self.webui is True:
             self._data["spec"]["sparkWebUI"] = True
+
+        if self.configmap is not None:
+            self._data["spec"]["sparkConfigurationMap"] = self.configmap
