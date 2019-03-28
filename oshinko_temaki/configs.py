@@ -17,7 +17,11 @@ class ClusterConfig():
     
     def set_parameter(self, name, source, default):
         """set the named parameter or default if the value is None"""
-        value = getattr(source, name)
+        try:
+            value = getattr(source, name)
+        except AttributeError:
+            value = None
+
         if value is None:
             value = default
         setattr(self, name, value)

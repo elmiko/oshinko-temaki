@@ -15,6 +15,7 @@ class TestCMTemplate(unittest.TestCase):
             "apiVersion": "v1",
             "kind": "ConfigMap",
             "metadata": {
+                "name": "test-cluster",
                 "labels": {
                     "radanalytics.io/kind": "SparkCluster"
                 }
@@ -32,6 +33,7 @@ class TestCMTemplate(unittest.TestCase):
     def test_minimum(self):
         """test the minimal ConfigMap definition of a cluster"""
         expected = self.base_expected()
+        del expected["metadata"]["name"]
         expected["data"]["config"] = self.base_config()
 
         conf = configs.ClusterConfig(object())
@@ -52,7 +54,6 @@ class TestCMTemplate(unittest.TestCase):
     def test_name(self):
         """test adding a name to a ConfigMap definition of a cluster"""
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
 
         conf = configs.ClusterConfig(argparse.Namespace(name="test-cluster"))
@@ -66,7 +67,6 @@ class TestCMTemplate(unittest.TestCase):
         """test adding a custom image to the ConfigMap"""
         imageref = "some/custom:image"
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"customImage": imageref})
 
@@ -82,7 +82,6 @@ class TestCMTemplate(unittest.TestCase):
     def test_metrics(self):
         """test adding enabled metrics to the ConfigMap"""
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"metrics": True})
 
@@ -98,7 +97,6 @@ class TestCMTemplate(unittest.TestCase):
     def test_webui(self):
         """test adding enabled web ui to the ConfigMap"""
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"sparkWebUI": True})
 
@@ -114,7 +112,6 @@ class TestCMTemplate(unittest.TestCase):
     def test_configmap(self):
         """test adding a configmap to the ConfigMap"""
         expected = self.base_expected()
-        expected["metadata"]["name"] = "test-cluster"
         expected["data"]["config"] = self.base_config()
         expected["data"]["config"].update({"sparkConfigurationMap": "testMap"})
 
