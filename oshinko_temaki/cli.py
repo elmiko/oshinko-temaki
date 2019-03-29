@@ -35,19 +35,25 @@ def main():
     parser.add_argument("-e", "--env",
                         dest="envs",
                         action="append",
-                        help="add environment variable to set in cluster, " \
+                        help="add environment variable to set in cluster, "
                              "example --env KEY=VALUE")
     parser.add_argument("-s", "--sparkconfig",
                         dest="sparkconfigs",
                         action="append",
                         help="add a spark configuration variable to the "
                              "cluster, example --sparkconfig KEY=VALUE")
+    parser.add_argument("-d", "--download",
+                        dest="downloads",
+                        action="append",
+                        help="add a URL and directory to download data, "
+                             "example --download URL::DIR")
     parser.add_argument("-o", "--output",
                         dest="output",
                         choices=["cr", "cm"],
                         default="cr",
-                        help="specify the output type, custom resource (cr) " \
+                        help="specify the output type, custom resource (cr) "
                              "or ConfigMap (cm). default is cr")
+
     args = parser.parse_args()
     conf = configs.ClusterConfig(args)
     if args.output == "cr":

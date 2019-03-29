@@ -156,6 +156,23 @@ class TestCMTemplate(unittest.TestCase):
                                                Loader=yaml.FullLoader)
         self.assertDictEqual(observed, expected)
 
+    def test_dowloads(self):
+        """test adding a download url to the ConfigMap"""
+        expected = self.base_expected()
+        expected["data"]["config"] = self.base_config()
+        expected["data"]["config"].update(
+            {"downloadData":
+             [{"url": "http://test.test/file", "to": "/tmp/"}]})
+
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   downloads=["http://test.test/file::/tmp/"])
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CMTemplate(conf).dumps()
+        observed = json.loads(raw)
+        observed["data"]["config"] = yaml.load(observed["data"]["config"],
+                                               Loader=yaml.FullLoader)
+        self.assertDictEqual(observed, expected)
+
 
 class TestCRDTemplate(unittest.TestCase):
     @staticmethod
@@ -267,6 +284,20 @@ class TestCRDTemplate(unittest.TestCase):
 
         parms = argparse.Namespace(name=expected["metadata"]["name"],
                                    sparkconfigs=["TEST=success"])
+        conf = configs.ClusterConfig(parms)
+        raw = templates.CRDTemplate(conf).dumps()
+        observed = json.loads(raw)
+        self.assertDictEqual(observed, expected)
+
+    def test_dowloads(self):
+        """test adding a download url to the CRD"""
+        expected = self.base_expected()
+        expected["spec"].update(
+            {"downloadData":
+             [{"url": "http://test.test/file", "to": "/tmp/"}]})
+
+        parms = argparse.Namespace(name=expected["metadata"]["name"],
+                                   downloads=["http://test.test/file::/tmp/"])
         conf = configs.ClusterConfig(parms)
         raw = templates.CRDTemplate(conf).dumps()
         observed = json.loads(raw)

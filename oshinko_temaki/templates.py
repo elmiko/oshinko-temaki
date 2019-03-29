@@ -31,6 +31,15 @@ class BaseTemplate():
                 key, value = conf.split("=", 1)
                 self.sparkconfigs.append({ "name": key, "value": value })
 
+        # setup download data targets so they are easier to process
+        if config.downloads is None:
+            self.downloads = None
+        else:
+            self.downloads = [] 
+            for dl in config.downloads:
+                key, value = dl.split("::", 1)
+                self.downloads.append({ "url": key, "to": value })
+
     def dumps(self):
         return json.dumps(self._data)
 
@@ -65,6 +74,9 @@ class CMTemplate(BaseTemplate):
 
         if self.sparkconfigs is not None:
             data["sparkConfiguration"] = self.sparkconfigs
+
+        if self.downloads is not None:
+            data["downloadData"] = self.downloads
 
         self._data = {
             "apiVersion": "v1",
@@ -118,3 +130,6 @@ class CRDTemplate(BaseTemplate):
         
         if self.sparkconfigs is not None:
             self._data["spec"]["sparkConfiguration"] = self.sparkconfigs
+
+        if self.downloads is not None:
+            self._data["spec"]["downloadData"] = self.downloads
