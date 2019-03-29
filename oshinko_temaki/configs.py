@@ -15,6 +15,7 @@ class ClusterConfig():
         self.set_parameter("webui", args, None)
         self.set_parameter("configmap", args, None)
         self.set_parameter("envs", args, None)
+        self.set_parameter("sparkconfigs", args, None)
 
     def set_parameter(self, name, source, default):
         """set the named parameter or default if the value is None"""

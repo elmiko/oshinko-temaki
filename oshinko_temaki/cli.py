@@ -35,8 +35,13 @@ def main():
     parser.add_argument("-e", "--env",
                         dest="envs",
                         action="append",
-                        help="and environment variable to set in cluster, " \
+                        help="add environment variable to set in cluster, " \
                              "example --env KEY=VALUE")
+    parser.add_argument("-s", "--sparkconfig",
+                        dest="sparkconfigs",
+                        action="append",
+                        help="add a spark configuration variable to the "
+                             "cluster, example --sparkconfig KEY=VALUE")
     parser.add_argument("-o", "--output",
                         dest="output",
                         choices=["cr", "cm"],

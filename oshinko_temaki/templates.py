@@ -22,6 +22,15 @@ class BaseTemplate():
                 key, value = env.split("=", 1)
                 self.envs.append({ "name": key, "value": value })
 
+        # setup spark config variables so they are easier to process
+        if config.sparkconfigs is None:
+            self.sparkconfigs = None
+        else:
+            self.sparkconfigs = [] 
+            for conf in config.sparkconfigs:
+                key, value = conf.split("=", 1)
+                self.sparkconfigs.append({ "name": key, "value": value })
+
     def dumps(self):
         return json.dumps(self._data)
 
@@ -53,6 +62,9 @@ class CMTemplate(BaseTemplate):
 
         if self.envs is not None:
             data["env"] = self.envs
+
+        if self.sparkconfigs is not None:
+            data["sparkConfiguration"] = self.sparkconfigs
 
         self._data = {
             "apiVersion": "v1",
@@ -103,3 +115,6 @@ class CRDTemplate(BaseTemplate):
 
         if self.envs is not None:
             self._data["spec"]["env"] = self.envs
+        
+        if self.sparkconfigs is not None:
+            self._data["spec"]["sparkConfiguration"] = self.sparkconfigs
