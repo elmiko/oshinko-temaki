@@ -21,10 +21,6 @@ def main():
     parser.add_argument("-i", "--image",
                         dest="image",
                         help="Spark cluster image to use")
-    parser.add_argument("--crd",
-                        dest="crd",
-                        help="set if the output should be a CRD",
-                        action="store_true")
     parser.add_argument("-t", "--metrics",
                         dest="metrics",
                         help="enable metrics deployment",
@@ -41,9 +37,15 @@ def main():
                         action="append",
                         help="and environment variable to set in cluster, " \
                              "example --env KEY=VALUE")
+    parser.add_argument("-o", "--output",
+                        dest="output",
+                        choices=["cr", "cm"],
+                        default="cr",
+                        help="specify the output type, custom resource (cr) " \
+                             "or ConfigMap (cm). default is cr")
     args = parser.parse_args()
     conf = configs.ClusterConfig(args)
-    if args.crd is True:
+    if args.output == "cr":
         cluster = templates.CRDTemplate(conf)
     else:
         cluster = templates.CMTemplate(conf)
