@@ -1,6 +1,22 @@
 CHANGES
 =======
 
+0.4.0
+-----
+
+* add download flag to command line
+* add spark config flag
+* make crd the default option for output
+* add env variable command line flag
+* add more error checking to configs
+* fix error with default parameter selection
+* fix import error in cli
+* add support for spark configmaps
+* add a config object
+* add oshinko-temaki as a script target
+* add webui flag
+* update authors and changelog for 0.3.0 release
+
 0.3.0
 -----
 
